@@ -1,9 +1,9 @@
 from flask import request, redirect, url_for, render_template, Flask, session
 from mode import User
 from flask_sqlalchemy import SQLAlchemy
-from encrypt import validate_password
+from encrypt import validate_password, encrypt_password
 import os, datetime
-from flask_login import LoginManager, login_required, logout_user, login_user
+from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -26,7 +26,7 @@ def load_user(user_id):
 def login():
     error = None
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
+        user = db.session.query(User).filter_by(username=request.form['username']).first()
         if user is None or not validate_password(user.password, request.form['password']):
             error = 'Invalid username or password'
         else:
@@ -53,6 +53,30 @@ def settings():
 def logout():
     logout_user()
     return redirect('login')
+
+
+@app.route("/user", methods=['GET', 'POST'])
+@login_required
+def user():
+    error = None
+    if request.method == 'POST':
+        user = current_user
+        if user is None or not validate_password(user.password, request.form['password']):
+            error = 'Invalid username or password'
+        else:
+            try:
+                if request.form['new_password_again'] != request.form['new_password']:
+                    error = 'Inconsistent new password'
+            except:
+                error = 'Please fill in all the items'
+            else:
+                change = db.session.query(User).filter_by(username=user.username).first()
+                change.password = encrypt_password(request.form['new_password'])
+                db.session.add(change)
+                db.session.commit()
+                logout_user()
+                return redirect('/')
+    return render_template('index.html', error=error)
 
 
 @app.route('/')

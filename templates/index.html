@@ -177,30 +177,33 @@
                         Change your password
                     </div>
                     <div class="panel-body">
-                        <form role="form">
+                        <form role="form" action="{{ url_for('user') }}" method="post">
                             <fieldset>
                                 <div class="form-group">
-                                    <label>Disabled input</label>
-                                    <input class="form-control" id="disabledInput" placeholder="Disabled input"
-                                           type="text">
+                                    <label>new password</label>
+                                    <input class="form-control" id="disabledInput" placeholder="new password"
+                                           type="password" name="new_password" value="">
                                 </div>
                                 <div class="form-group">
-                                    <label for="disabledSelect">Disabled select menu</label>
-                                    <select id="disabledSelect" class="form-control">
-                                        <option>Disabled select</option>
-                                    </select>
+                                    <label>new password again</label>
+                                    <input class="form-control" id="disabledInput" placeholder="new password again"
+                                           type="password" name="new_password_again" value="">
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox">Disabled Checkbox
-                                    </label>
+                                {% if error %}
+                                    <div class="form-group">
+                                        <span class="label label-danger">Error:{{ error }}</span>
+                                    </div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label>password</label>
+                                    <input class="form-control" id="disabledInput" placeholder="password"
+                                           type="password" name="password" value="">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Disabled Button</button>
+                                <button type="submit" class="btn btn-primary">change</button>
                             </fieldset>
                         </form>
                     </div>
                 </div>
-
             </div>
             <div class="col-lg-3"></div>
         </div>
