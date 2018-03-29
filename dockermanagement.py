@@ -2,7 +2,7 @@ from flask import request, redirect, url_for, render_template, Flask, session
 from mode import User
 from flask_sqlalchemy import SQLAlchemy
 from encrypt import validate_password, encrypt_password
-import os, datetime
+import os, datetime, docker
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 
 app = Flask(__name__)
@@ -15,6 +15,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 app.config['REMEMBER_COOKIE_DURATION'] = datetime.timedelta(days=8)
 app.permanent_session_lifetime = datetime.timedelta(seconds=10 * 60)
+client = docker.DockerClient(base_url='tcp://sumeragibi.date:2376')
 
 
 @login_manager.user_loader
@@ -76,13 +77,45 @@ def user():
                 db.session.commit()
                 logout_user()
                 return redirect('/')
-    return render_template('index.html', error=error)
+    return render_template('user.html', error=error)
 
 
 @app.route('/')
 @login_required
 def index():
     return render_template('index.html')
+
+
+@app.route('/images')
+@login_required
+def images():
+    images = []
+    for image in client.images.list():
+        images.append(
+            {'id': image.attrs['Id'][7:19], 'tags': image.attrs['RepoTags'][0], 'created': image.attrs['Created'][:10],
+             'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB'})
+    return render_template('images.html', images=images)
+
+
+@app.route('/image/<id>')
+@login_required
+def image(id):
+    image = client.images.get(id)
+    return render_template('image.html', image=image.attrs)
+
+
+@app.route('/configuration')
+@login_required
+def configuration():
+    config = client.configs.list()
+    for con in config:
+        print(con.attrs)
+
+
+@app.route('containers')
+@login_required
+def containers():
+    return ''
 
 
 if __name__ == '__main__':

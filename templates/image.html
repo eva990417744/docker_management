@@ -34,12 +34,14 @@
         <script src="{{ url_for('static',filename='js/respond.min.js') }}"></script>
     <![endif]-->
 
+
 </head>
 
 <body>
 
 <div id="wrapper">
 
+    <!-- Navigation -->
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -85,55 +87,77 @@
         <!-- /.navbar-static-side -->
     </nav>
 
-
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">User Profile</h1>
+                <h1 class="page-header">Tables</h1>
             </div>
+            <!-- /.col-lg-12 -->
         </div>
+        <!-- /.row -->
         <div class="row">
-            <div class="col-lg-3"></div>
-            <div class="col-lg-6">
+            <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Change your password
+                        DataTables Advanced Tables
                     </div>
+                    <!-- /.panel-heading -->
                     <div class="panel-body">
-                        <form role="form" action="{{ url_for('user') }}" method="post">
-                            <fieldset>
-                                <div class="form-group">
-                                    <label>new password</label>
-                                    <input class="form-control" id="disabledInput" placeholder="new password"
-                                           type="password" name="new_password" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label>new password again</label>
-                                    <input class="form-control" id="disabledInput" placeholder="new password again"
-                                           type="password" name="new_password_again" value="">
-                                </div>
-                                {% if error %}
-                                    <div class="form-group">
-                                        <span class="label label-danger">Error:{{ error }}</span>
-                                    </div>
-                                {% endif %}
-                                <div class="form-group">
-                                    <label>password</label>
-                                    <input class="form-control" id="disabledInput" placeholder="password"
-                                           type="password" name="password" value="">
-                                </div>
-                                <button type="submit" class="btn btn-primary">change</button>
-                            </fieldset>
-                        </form>
+                        <table  class="table  table-hover">
+                            <thead>
+                            <tr>
+                                <th>属性</th>
+                                <th>值</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="gradeC">
+                                <td>Id</td>
+                                <td>{{ image['Id'][7:19] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>作者</td>
+                                <td>{{ image['Author'] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>架构</td>
+                                <td>{{ image['Architecture'] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>创建</td>
+                                <td>{{ image['Created'][:19] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>Docker版本</td>
+                                <td>{{ image['DockerVersion'] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>操作系统</td>
+                                <td>{{ image['Os'] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>父镜像</td>
+                                <td>{{ image['Parent'] }}</td>
+                            </tr>
+                            <tr class="gradeC">
+                                <td>大小</td>
+                                <td>{{ image['Size'] }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!-- /.table-responsive -->
                     </div>
+                    <!-- /.panel-body -->
                 </div>
+                <!-- /.panel -->
             </div>
-            <div class="col-lg-3"></div>
+            <!-- /.col-lg-12 -->
         </div>
     </div>
+    <!-- /#page-wrapper -->
 
 </div>
-
+<!-- /#wrapper -->
 
 </body>
 <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
@@ -144,12 +168,12 @@
 <!-- Metis Menu Plugin JavaScript -->
 <script src="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.js') }}"></script>
 
-<!-- Morris Charts JavaScript -->
-<script src="{{ url_for('static',filename='vendor/raphael/raphael.min.js') }}"></script>
-<script src="{{ url_for('static',filename='vendor/morrisjs/morris.min.js') }}"></script>
-<script src="{{ url_for('static',filename='data/morris-data.js') }}"></script>
+<!-- DataTables JavaScript -->
+<script src="{{ url_for('static',filename='vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static',filename='vendor/datatables-plugins/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static',filename='vendor/datatables-responsive/dataTables.responsive.js') }}"></script>
 
 <!-- Custom Theme JavaScript -->
 <script src="{{ url_for('static',filename='dist/js/sb-admin-2.js') }}"></script>
-
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
 </html>
