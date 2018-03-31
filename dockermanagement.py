@@ -107,12 +107,11 @@ def image(id):
 @app.route('/configuration')
 @login_required
 def configuration():
-    config = client.configs.list()
-    for con in config:
-        print(con.attrs)
+    config = client.version()
 
 
-@app.route('containers')
+
+@app.route('/containers')
 @login_required
 def containers():
     return ''
