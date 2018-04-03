@@ -29,7 +29,7 @@ def login():
     if request.method == 'POST':
         user = db.session.query(User).filter_by(username=request.form['username']).first()
         if user is None or not validate_password(user.password, request.form['password']):
-            error = 'Invalid username or password'
+            error = '账号或密码错误'
         else:
             session.permanent = True
             try:
@@ -41,12 +41,6 @@ def login():
                 login_user(user=user, remember=True)
                 return redirect(request.args.get('next') or url_for('index'))
     return render_template('login.html', error=error)
-
-
-@app.route("/settings")
-@login_required
-def settings():
-    pass
 
 
 @app.route("/logout")
@@ -63,13 +57,13 @@ def user():
     if request.method == 'POST':
         user = current_user
         if user is None or not validate_password(user.password, request.form['password']):
-            error = 'Invalid username or password'
+            error = '账号或密码错误'
         else:
             try:
                 if request.form['new_password_again'] != request.form['new_password']:
-                    error = 'Inconsistent new password'
+                    error = '两次输入的新密码不一致'
             except:
-                error = 'Please fill in all the items'
+                error = '请填写所有项目'
             else:
                 change = db.session.query(User).filter_by(username=user.username).first()
                 change.password = encrypt_password(request.form['new_password'])
@@ -92,7 +86,7 @@ def images():
     images = []
     for image in client.images.list():
         images.append(
-            {'id': image.attrs['Id'][7:19], 'tags': image.attrs['RepoTags'][0], 'created': image.attrs['Created'][:10],
+            {'id': image.attrs['Id'][7:17], 'tags': image.attrs['RepoTags'][0], 'created': image.attrs['Created'][:10],
              'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB'})
     return render_template('images.html', images=images)
 
@@ -107,14 +101,53 @@ def image(id):
 @app.route('/configuration')
 @login_required
 def configuration():
-    config = client.version()
-
+    version = client.version()
+    info = client.info()
+    return render_template('configuration.html', version=version, info=info)
 
 
 @app.route('/containers')
 @login_required
 def containers():
-    return ''
+    containers = []
+    for container in client.containers.list(all=True):
+        a = {'id': container.attrs['Id'], 'name': container.attrs['Name'],
+             'image': container.attrs['Config']['Image'], 'status': container.attrs['State']['Status']}
+        if container.attrs['Path'] != container.attrs['Config']['Cmd'][0]:
+            a['cmd'] = container.attrs['Path'] + '  ' + container.attrs['Config']['Cmd'][0]
+        else:
+            a['cmd'] = container.attrs['Path']
+        try:
+            b = list(container.attrs['NetworkSettings']['Ports'].keys())[0]
+            if container.attrs['NetworkSettings']['Ports'][b] is not None:
+                a['ports'] = (container.attrs['NetworkSettings']['Ports'][b][0]['HostIp'] + ':' +
+                              container.attrs['NetworkSettings']['Ports'][b][0][
+                                  'HostPort'] + '->' + b)
+            else:
+                a['ports'] = b
+        except:
+            a['ports'] = ''
+
+        containers.append(a)
+    return render_template('containers.html', containers=containers)
+
+
+@app.route('/container/<id>')
+@login_required
+def container(id):
+    a = client.containers.get(id).attrs
+    return render_template('container.html', container=a)
+
+
+@app.route('/dockerhub')
+@login_required
+def dockerhub(name='alpine'):
+    if request.method == 'GET':
+        images = client.images.search(name)
+        return render_template('dockerhub.html', images=images)
+    else:
+        images = client.images.search(request.form['term'])
+        return render_template('dockerhub.html', images=images)
 
 
 if __name__ == '__main__':
