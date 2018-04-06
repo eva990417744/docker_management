@@ -10,7 +10,6 @@ idna==2.6
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
-pypiwin32==220
 requests==2.18.4
 six==1.11.0
 SQLAlchemy==1.2.4
