@@ -34,7 +34,9 @@ class User(db.Model, flask_login.UserMixin):
     def __repr__(self):
         return '<User %r>' % (self.username)
 
-# db.create_all()
+
+if __name__ == '__main__':
+    db.create_all()
 # from encrypt import encrypt_password, validate_password
 #
 # user = User(username='admin', password=encrypt_password('admin'), email='admin@example.com')

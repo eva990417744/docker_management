@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>容器 - Docker Management</title>
+    <title>容器 - Docker自动部署管理工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -50,7 +50,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker Management</a>
+            <a class="navbar-brand" href="/">Docker自动部署管理工具</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -134,10 +134,10 @@
                                             </a></p>
                                         </td>
                                     {% endif %}
-                                    {% if container['status']=='exited' %}
+                                    {% if container['status']=='exited' or container['status']=='created' %}
                                         <td>
                                             <p style="text-align: center"><a
-                                                    href="/container/status/{{ container['id'] }}">
+                                                    href="/container/start/{{ container['id'] }}">
                                                 <button type="button" class="btn btn-success">启动</button>
                                             </a>
                                                 <a href="/container/delete/{{ container['id'] }}">

@@ -36,10 +36,10 @@ def login():
                 request.form['remember']
             except:
                 login_user(user)
-                return redirect(request.args.get('next') or url_for('index'))
+                return redirect(request.args.get('next') or url_for('images'))
             else:
                 login_user(user=user, remember=True)
-                return redirect(request.args.get('next') or url_for('index'))
+                return redirect(request.args.get('next') or url_for('images'))
     return render_template('login.html', error=error)
 
 
@@ -77,7 +77,7 @@ def user():
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    return redirect(url_for('images'))
 
 
 @app.route('/images')
@@ -87,7 +87,8 @@ def images():
     for image in client.images.list():
         images.append(
             {'id': image.attrs['Id'][7:17], 'tags': image.attrs['RepoTags'][0], 'created': image.attrs['Created'][:10],
-             'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB'})
+             'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB',
+             'name': image.attrs['RepoTags'][0].split(':')[0]})
     return render_template('images.html', images=images)
 
 
@@ -96,6 +97,40 @@ def images():
 def image(id):
     image = client.images.get(id)
     return render_template('image.html', image=image.attrs)
+
+
+@app.route('/images/download/<imagename>', methods=['GET'])
+@login_required
+def image_down(imagename):
+    try:
+        img = client.images.pull(imagename, 'latest').attrs
+    except Exception:
+        images = client.images.search(imagename)
+        return render_template('dockerhub.html', images=images, error="下载失败")
+    else:
+        return redirect(url_for('images'))
+
+
+@app.route('/images/download/<imagename>/<imagename2>', methods=['GET'])
+@login_required
+def image_down2(imagename, imagename2):
+    try:
+        img = client.images.pull(imagename + '/' + imagename2, 'latest').attrs
+    except Exception:
+        images = client.images.search(imagename + '/' + imagename2)
+        return render_template('dockerhub.html', images=images, error="下载失败")
+    else:
+        return redirect(url_for('images'))
+
+
+@app.route('/image/delete/<id>', methods=['GET'])
+@login_required
+def image_delete(id):
+    try:
+        client.images.remove(id)
+    except:
+        redirect('/image/' + id)
+    return redirect(url_for('images'))
 
 
 @app.route('/configuration')
@@ -111,10 +146,13 @@ def configuration():
 def containers():
     containers = []
     for container in client.containers.list(all=True):
-        a = {'id': container.attrs['Id'], 'name': container.attrs['Name'],
+        a = {'id': container.attrs['Id'], 'name': container.attrs['Name'][1:],
              'image': container.attrs['Config']['Image'], 'status': container.attrs['State']['Status']}
-        if container.attrs['Path'] != container.attrs['Config']['Cmd'][0]:
-            a['cmd'] = container.attrs['Path'] + '  ' + container.attrs['Config']['Cmd'][0]
+        if container.attrs['Args']:
+            a['cmd'] = container.attrs['Path']
+            for b in container.attrs['Args']:
+                a['cmd'] += '  '
+                a['cmd'] += b
         else:
             a['cmd'] = container.attrs['Path']
         try:
@@ -127,7 +165,6 @@ def containers():
                 a['ports'] = b
         except:
             a['ports'] = ''
-
         containers.append(a)
     return render_template('containers.html', containers=containers)
 
@@ -139,7 +176,123 @@ def container(id):
     return render_template('container.html', container=a)
 
 
-@app.route('/dockerhub')
+@app.route('/container/create/<name>', methods=['GET', 'post'])
+@login_required
+def container_create(name):
+    if request.method == 'GET':
+        error = None
+        return render_template('container_create.html', name=name, error=error)
+    else:
+        cname = request.form['name']
+        if cname == '':
+            cname = None
+
+        command = request.form['command']
+        if command == '':
+            command = None
+
+        ports = request.form['ports']
+        flag = 0
+        if ports == '':
+            flag = 1
+            ports = None
+
+        ports_host = request.form['ports_host']
+        if ports_host == '':
+            ports_host = None
+
+        else:
+            ports_host = int(ports_host)
+
+        try:
+            if flag == 0:
+                client.containers.run(image=name, command=command, detach=True, tty=True, ports={ports: ports_host},
+                                      name=cname)
+            else:
+                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname)
+        except:
+            error = '创建出错'
+            return render_template('container_create.html', name=name, error=error)
+        else:
+            return redirect(url_for('containers'))
+
+
+@app.route('/container/create/<name>/<name1>', methods=['GET', 'post'])
+@login_required
+def container_create1(name, name1):
+    if request.method == 'GET':
+        error = None
+        return render_template('container_create.html', name=name, name1=name1, error=error)
+    else:
+        cname = request.form['name']
+        if cname == '':
+            cname = None
+
+        command = request.form['command']
+        if command == '':
+            command = None
+
+        ports = request.form['ports']
+        flag = 0
+        if ports == '':
+            flag = 1
+            ports = None
+
+        ports_host = request.form['ports_host']
+        if ports_host == '':
+            ports_host = None
+
+        else:
+            ports_host = int(ports_host)
+
+        try:
+            if flag == 0:
+                client.containers.run(image=name + '/' + name1, command=command, detach=True, tty=True,
+                                      ports={ports: ports_host},
+                                      name=cname)
+            else:
+                client.containers.run(image=name + '/' + name1, command=command, detach=True, tty=True, name=cname)
+        except:
+            error = '创建出错'
+            return render_template('container_create.html', name=name, error=error)
+        else:
+            return redirect(url_for('containers'))
+
+
+@app.route('/container/stop/<id>')
+@login_required
+def container_stop(id):
+    try:
+        a = client.containers.get(id)
+        a.stop()
+    except:
+        pass
+    return redirect('/container/' + str(id))
+
+
+@app.route('/container/start/<id>')
+@login_required
+def container_start(id):
+    try:
+        a = client.containers.get(id)
+        a.start()
+    except:
+        pass
+    return redirect('/container/' + str(id))
+
+
+@app.route('/container/delete/<id>')
+@login_required
+def container_delete(id):
+    try:
+        a = client.containers.get(id)
+        a.remove()
+    except:
+        pass
+    return redirect(url_for('containers'))
+
+
+@app.route('/dockerhub', methods=['GET', 'POST'])
 @login_required
 def dockerhub(name='alpine'):
     if request.method == 'GET':

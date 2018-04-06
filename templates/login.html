@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title> 登陆 - Docker Management</title>
+    <title> 登陆 - Docker自动部署管理工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -46,7 +46,7 @@
                     <form role="form" action="{{ url_for('login') }}" method="post">
                         <fieldset>
                             <div class="form-group">
-                                <input class="form-control" placeholder="E-mail" name="username" type="text" autofocus>
+                                <input class="form-control" placeholder="账号" name="username" type="text" autofocus>
                             </div>
                             {% if error %}
                                 <div class="form-group">
@@ -54,7 +54,7 @@
                                 </div>
                             {% endif %}
                             <div class="form-group">
-                                <input class="form-control" placeholder="Password" name="password" type="password"
+                                <input class="form-control" placeholder="密码" name="password" type="password"
                                        value="">
                             </div>
                             <div class="checkbox">

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>镜像 - Docker Management</title>
+    <title>镜像 - Docker自动部署管理工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -50,7 +50,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker Management</a>
+            <a class="navbar-brand" href="/">Docker自动部署管理工具</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -101,14 +101,16 @@
             <div class="col-lg-5"></div>
             <div class="col-lg-5"></div>
             <div class="col-lg-2">
-                <div class="input-group custom-search-form">
-                    <input type="text" class="form-control" placeholder="Search..." name="term">
-                    <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" href="{{ url_for('dockerhub') }}">
+                <form action="{{ url_for('dockerhub') }}" method="post">
+                    <div class="input-group custom-search-form">
+                        <input type="text" class="form-control" placeholder="Search..." name="term">
+                        <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">
                                         <i class="fa fa-search"></i>
                                     </button>
-                                </span>
-                </div>
+                        </span>
+                    </div>
+                </form>
             </div>
         </div>
         <p>&nbsp;</p>
@@ -147,7 +149,7 @@
                                     <td>{{ image['star_count'] }}</td>
                                     <td>{{ image['is_official'] }}</td>
                                     <td>{{ image['is_automated'] }}</td>
-                                    <td><a href="images/download/{{ image['name'] }}">
+                                    <td><a href="/images/download/{{ image['name'] }}">
                                         <button type="button" class="btn btn-success">下载</button>
                                     </a></td>
                                 </tr>
@@ -186,6 +188,11 @@
 <!-- Custom Theme JavaScript -->
 <script src="{{ url_for('static',filename='dist/js/sb-admin-2.js') }}"></script>
 <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+{% if error %}
+    <script>
+        alert({{ error }})
+    </script>
+{% endif %}
 <script>
     $(document).ready(function () {
         $('#dataTables-example').DataTable({

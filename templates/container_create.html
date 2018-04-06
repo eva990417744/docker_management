@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Docker Management</title>
+    <title>创建容器 - Docker自动部署管理工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -48,7 +48,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker Management</a>
+            <a class="navbar-brand" href="/">Docker自动部署管理工具</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -92,7 +92,7 @@
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">密码管理</h1>
+                <h1 class="page-header">创建容器</h1>
             </div>
         </div>
         <div class="row">
@@ -100,21 +100,25 @@
             <div class="col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        修改密码
+                        创建基于{{ name }}{{ '/'+name1 }}镜像的容器
                     </div>
                     <div class="panel-body">
-                        <form role="form" action="{{ url_for('user') }}" method="post">
+                        <form role="form" action="/container/create/{{ name }}" method="post">
                             <fieldset>
-                                <fieldset>
                                 <div class="form-group">
-                                    <label>密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="密码"
-                                           type="password" name="password" value="">
+                                    <label>容器名字</label>
+                                    <input class="form-control" id="disabledInput" placeholder="不填写默认随机"
+                                           type="text" name="name" value="">
                                 </div>
                                 <div class="form-group">
-                                    <label>新密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="新密码"
-                                           type="password" name="new_password" value="">
+                                    <label>控制台命令</label>
+                                    <input class="form-control" id="disabledInput" placeholder="不填写默认启动控制台"
+                                           type="text" name="command" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label>容器绑定端口</label>
+                                    <input class="form-control" id="disabledInput" placeholder="不填写默认不绑定端口 例如：1111/tcp"
+                                           type="text" name="ports" value="">
                                 </div>
                                 {% if error %}
                                     <div class="form-group">
@@ -122,11 +126,12 @@
                                     </div>
                                 {% endif %}
                                 <div class="form-group">
-                                    <label>确认密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="确认密码"
-                                           type="password" name="new_password_again" value="">
+                                    <label>主机对应容器绑定端口</label>
+                                    <input class="form-control" id="disabledInput" placeholder=
+                                            "例如:1234（填写此栏不填写容器绑定端口栏则无效,不填写默认随机,）"
+                                           type="number" name="ports_host">
                                 </div>
-                                <button type="submit" class="btn btn-primary">修改</button>
+                                <button type="submit" class="btn btn-primary">创建容器</button>
                             </fieldset>
                         </form>
                     </div>

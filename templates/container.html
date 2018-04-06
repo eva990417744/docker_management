@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>容器 - Docker Management</title>
+    <title>容器 - Docker自动部署管理工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -50,7 +50,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker Management</a>
+            <a class="navbar-brand" href="/">Docker自动部署管理工具</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -152,15 +152,15 @@
                         <!-- /.table-responsive -->
                         <P>
                             {% if container['State']['Running']==True %}
-                                <a href="/container/stop/{{ container['id'] }}">
+                                <a href="/container/stop/{{ container['Id'] }}">
                                     <button type="button" class="btn btn-warning">停止</button>
                                 </a>
                             {% endif %}
                             {% if container['State']['Running']==False %}
-                                <a href="/container/status/{{ container['id'] }}">
+                                <a href="/container/start/{{ container['Id'] }}">
                                     <button type="button" class="btn btn-success">启动</button>
                                 </a>
-                                <a href="/container/delete/{{ container['id'] }}">
+                                <a href="/container/delete/{{ container['Id'] }}">
                                     <button type="button" class="btn btn-danger">删除</button>
                                 </a>
                             {% endif %}
