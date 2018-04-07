@@ -207,9 +207,9 @@ def container_create(name):
         try:
             if flag == 0:
                 client.containers.run(image=name, command=command, detach=True, tty=True, ports={ports: ports_host},
-                                      name=cname,name1=None)
+                                      name=cname)
             else:
-                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname,name1=None)
+                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname)
         except:
             error = '创建出错'
             return render_template('container_create.html', name=name, error=error)
@@ -222,7 +222,7 @@ def container_create(name):
 def container_create1(name, name1):
     if request.method == 'GET':
         error = None
-        return render_template('container_create.html', name=name, name1=name1, error=error)
+        return render_template('container_create.html', name=name+'/'+name1, error=error)
     else:
         cname = request.form['name']
         if cname == '':
@@ -254,7 +254,7 @@ def container_create1(name, name1):
                 client.containers.run(image=name + '/' + name1, command=command, detach=True, tty=True, name=cname)
         except:
             error = '创建出错'
-            return render_template('container_create.html', name=name, error=error)
+            return render_template('container_create.html', name=name+'/'+name1, error=error)
         else:
             return redirect(url_for('containers'))
 
