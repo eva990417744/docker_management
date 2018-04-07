@@ -100,7 +100,12 @@
             <div class="col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        创建基于{{ name }}{{ '/'+name1 }}镜像的容器
+                        {% if name1 is None %}
+                            创建基于{{ name }}镜像的容器
+                        {% endif %}
+                        {% if name1 is not None %}
+                            创建基于{{ name }}{{ '/'+name1 }}镜像的容器
+                        {% endif %}
                     </div>
                     <div class="panel-body">
                         <form role="form" action="/container/create/{{ name }}" method="post">

@@ -207,9 +207,9 @@ def container_create(name):
         try:
             if flag == 0:
                 client.containers.run(image=name, command=command, detach=True, tty=True, ports={ports: ports_host},
-                                      name=cname)
+                                      name=cname,name1=None)
             else:
-                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname)
+                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname,name1=None)
         except:
             error = '创建出错'
             return render_template('container_create.html', name=name, error=error)
