@@ -267,7 +267,7 @@ def container_stop(id):
         a.stop()
     except:
         pass
-    return redirect('/container/' + str(id))
+    return redirect(url_for('containers'))
 
 
 @app.route('/container/start/<id>')
@@ -278,7 +278,7 @@ def container_start(id):
         a.start()
     except:
         pass
-    return redirect('/container/' + str(id))
+    return redirect(url_for('containers'))
 
 
 @app.route('/container/delete/<id>')
