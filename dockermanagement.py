@@ -89,10 +89,18 @@ def index():
 def images():
     images = []
     for image in client.images.list():
-        images.append(
-            {'id': image.attrs['Id'][7:17], 'tags': image.attrs['RepoTags'][0], 'created': image.attrs['Created'][:10],
-             'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB',
-             'name': image.attrs['RepoTags'][0].split(':')[0]})
+        if image.attrs['RepoTags']:
+            images.append(
+                {'id': image.attrs['Id'][7:17], 'tags': image.attrs['RepoTags'][0],
+                 'created': image.attrs['Created'][:10],
+                 'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB',
+                 'name': image.attrs['RepoTags'][0].split(':')[0]})
+        else:
+            images.append(
+                {'id': image.attrs['Id'][7:17], 'tags': '',
+                 'created': image.attrs['Created'][:10],
+                 'size': str(round(int(image.attrs['VirtualSize']) / 1048576, 2)) + 'MB',
+                 'name': ''})
     return render_template('images.html', images=images)
 
 
