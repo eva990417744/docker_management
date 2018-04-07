@@ -15,7 +15,7 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 app.config['REMEMBER_COOKIE_DURATION'] = datetime.timedelta(days=8)
 app.permanent_session_lifetime = datetime.timedelta(seconds=10 * 60)
-client = docker.DockerClient(base_url='tcp://sumeragibi.date:2376')
+client = docker.from_env()
 
 
 @login_manager.user_loader
