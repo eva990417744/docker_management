@@ -37,11 +37,11 @@ class User(db.Model, flask_login.UserMixin):
 
 if __name__ == '__main__':
     db.create_all()
-# from encrypt import encrypt_password, validate_password
-#
-# user = User(username='admin', password=encrypt_password('admin'), email='admin@example.com')
-# db.session.add(user)
-# db.session.commit()
-#
-# user = User.query.filter_by(username='admin').first()
-# print(validate_password(user.password, 'admin'))
+    # from encrypt import encrypt_password, validate_password
+    #
+    # user = User(username='admin', password=encrypt_password('admin'), email='admin@example.com')
+    # db.session.add(user)
+    # db.session.commit()
+    #
+    # user = User.query.filter_by(username='admin').first()
+    # print(validate_password(user.password, 'admin'))

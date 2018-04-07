@@ -1,10 +1,14 @@
+# coding:utf-8
 from flask import request, redirect, url_for, render_template, Flask, session
 from mode import User
 from flask_sqlalchemy import SQLAlchemy
 from encrypt import validate_password, encrypt_password
 import os, datetime, docker
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
+import sys
 
+reload(sys)
+sys.setdefaultencoding("utf-8")
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///management.db'
@@ -28,7 +32,7 @@ def login():
     error = None
     if request.method == 'POST':
         user = db.session.query(User).filter_by(username=request.form['username']).first()
-        if user is None or not validate_password(user.password, request.form['password']):
+        if user is None or not validate_password(user.password, str(request.form['password'])):
             error = '账号或密码错误'
         else:
             session.permanent = True
@@ -222,7 +226,7 @@ def container_create(name):
 def container_create1(name, name1):
     if request.method == 'GET':
         error = None
-        return render_template('container_create.html', name=name+'/'+name1, error=error)
+        return render_template('container_create.html', name=name + '/' + name1, error=error)
     else:
         cname = request.form['name']
         if cname == '':
@@ -254,7 +258,7 @@ def container_create1(name, name1):
                 client.containers.run(image=name + '/' + name1, command=command, detach=True, tty=True, name=cname)
         except:
             error = '创建出错'
-            return render_template('container_create.html', name=name+'/'+name1, error=error)
+            return render_template('container_create.html', name=name + '/' + name1, error=error)
         else:
             return redirect(url_for('containers'))
 
@@ -304,4 +308,4 @@ def dockerhub(name='alpine'):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000)
+    app.run(host='0.0.0.0', port=5001)

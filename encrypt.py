@@ -27,4 +27,3 @@ def encrypt_password(password, salt=None):
 
 def validate_password(hashed, input_password):
     return hashed == encrypt_password(input_password, salt=b64decode(hashed)[:8])
-
