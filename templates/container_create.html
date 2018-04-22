@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>创建容器 - Docker自动部署管理工具</title>
+    <title>创建容器 - Docker自动部署工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -48,7 +48,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Docker自动部署管理工具</a>
+            <a class="navbar-brand" href="/">Docker自动部署工具</a>
         </div>
         <!-- /.navbar-header -->
 
@@ -69,6 +69,9 @@
                     </li>
                     <li>
                         <a href="/configuration"><i class="fa fa-cog fa-fw"></i> 配置</a>
+                    </li>
+                    <li>
+                        <a href="/dockerfile"><i class="fa fa-folder-o"></i> dockerfile</a>>
                     </li>
                     <li>
                         <a href=""><i class="fa fa-user fa-fw"></i> 用户<span class="fa arrow"></span></a>
@@ -120,17 +123,35 @@
                                     <input class="form-control" id="disabledInput" placeholder="不填写默认不绑定端口 例如：1111/tcp"
                                            type="text" name="ports" value="">
                                 </div>
+                                <div class="form-group">
+                                    <label>主机对应容器绑定端口</label>
+                                    <input class="form-control" id="disabledInput" placeholder=
+                                            "例如:1234（填写此栏不填写容器绑定端口栏则无效,不填写默认随机）"
+                                           type="number" name="ports_host">
+                                </div>
+                                <div class="form-group">
+                                    <label>主机共享文件路径</label>
+                                    <input class="form-control" id="disabledInput" placeholder=
+                                            "不填写则不共享文件到容器 例如:/var/run/docker.sock"
+                                           type="text" name="host_path">
+                                </div>
+                                <div class="form-group">
+                                    <label>容器共享文件路径</label>
+                                    <input class="form-control" id="disabledInput" placeholder=
+                                            "容器共享文件路径,填写主机共享文件路径栏时此栏必填 例如:/docker.sock"
+                                           type="text" name="container_path">
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="auto_remove" type="checkbox" value="None"
+                                               placeholder="当容器的进程退出时，删除容器">自动移除容器
+                                    </label>
+                                </div>
                                 {% if error %}
                                     <div class="form-group">
                                         <span class="label label-danger">Error:{{ error }}</span>
                                     </div>
                                 {% endif %}
-                                <div class="form-group">
-                                    <label>主机对应容器绑定端口</label>
-                                    <input class="form-control" id="disabledInput" placeholder=
-                                            "例如:1234（填写此栏不填写容器绑定端口栏则无效,不填写默认随机,）"
-                                           type="number" name="ports_host">
-                                </div>
                                 <button type="submit" class="btn btn-primary">创建容器</button>
                             </fieldset>
                         </form>

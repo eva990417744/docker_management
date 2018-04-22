@@ -3,7 +3,7 @@ from flask import request, redirect, url_for, render_template, Flask, session
 from mode import User
 from flask_sqlalchemy import SQLAlchemy
 from encrypt import validate_password, encrypt_password
-import os, datetime, docker
+import os, datetime, docker, time
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 import sys
 
@@ -139,7 +139,7 @@ def image_down2(imagename, imagename2):
 @login_required
 def image_delete(id):
     try:
-        client.images.remove(id)
+        client.images.remove(id, force=True, noprune=False)
     except:
         redirect('/image/' + id)
     return redirect(url_for('images'))
@@ -212,21 +212,39 @@ def container_create(name):
         ports_host = request.form['ports_host']
         if ports_host == '':
             ports_host = None
-
         else:
             ports_host = int(ports_host)
 
-        try:
-            if flag == 0:
-                client.containers.run(image=name, command=command, detach=True, tty=True, ports={ports: ports_host},
-                                      name=cname)
-            else:
-                client.containers.run(image=name, command=command, detach=True, tty=True, name=cname)
-        except:
-            error = '创建出错'
-            return render_template('container_create.html', name=name, error=error)
+        host_path = request.form['host_path']
+        container_path = request.form['container_path']
+        if host_path != '' and container_path == '':
+            return render_template('container_create.html', name=name, error='请填写容器共享文件路径栏')
+        elif container_path != '' and host_path == '':
+            return render_template('container_create.html', name=name, error='请填写主机共享文件路径栏')
+        elif host_path == '' and container_path == '':
+            volumes = None
         else:
-            return redirect(url_for('containers'))
+            volumes = {host_path: {'bind': container_path, 'mode': 'rw'}}
+
+        try:
+            request.form['auto_remove']
+        except:
+            remove = False
+        else:
+            remove = True
+
+    try:
+        if flag == 0:
+            client.containers.run(image=name, command=command, detach=True, tty=True, ports={ports: ports_host},
+                                  name=cname, auto_remove=remove, volumes=volumes)
+        else:
+            client.containers.run(image=name, command=command, detach=True, tty=True, name=cname, auto_remove=remove,
+                                  volumes=volumes)
+    except:
+        error = '创建出错'
+        return render_template('container_create.html', name=name, error=error)
+    else:
+        return redirect(url_for('containers'))
 
 
 @app.route('/container/create/<name>/<name1>', methods=['GET', 'post'])
@@ -313,6 +331,74 @@ def dockerhub(name='alpine'):
     else:
         images = client.images.search(request.form['term'])
         return render_template('dockerhub.html', images=images)
+
+
+@app.route('/dockerfile', methods=['GET', 'POST'])
+@login_required
+def dockerfile():
+    if request.method == 'GET':
+        file = []
+        for root, dirs, files in os.walk(str(os.getcwd()) + '/dockerfile'):
+            for name in files:
+                if name != '.gitignore':
+                    file.append(
+                        {'name': name, 'path': os.path.join(root, name), 'time': time.strftime("%Y-%m-%d %H:%M:%S",
+                                                                                               time.localtime(
+                                                                                                   os.stat(
+                                                                                                       os.path.join(
+                                                                                                           root,
+                                                                                                           name)).st_mtime))})
+        return render_template('dockerfile.html', file=file)
+
+
+@app.route('/adddockerfile', methods=['GET', 'POST'])
+@login_required
+def adddockerfile():
+    error = None
+    if request.method == 'POST':
+        try:
+            file = request.files['file']
+            if request.form['name'] != '':
+                name = request.form['name']
+            else:
+                name = file.filename
+            a = file.read()
+            with open(os.path.join(str(os.getcwd()) + '/dockerfile/', name), 'w+') as f:
+                f.write(a)
+        except:
+            error = '上传失败'
+            return render_template('dockerfile_add.html', error=error)
+        else:
+            return redirect(url_for('dockerfile'))
+    else:
+        return render_template('dockerfile_add.html', error=error)
+
+
+@app.route('/dockerfile/delete/<name>')
+@login_required
+def dockerfile_delete(name):
+    os.remove(str(os.getcwd()) + '/dockerfile/' + name)
+    return redirect(url_for('dockerfile'))
+
+
+@app.route('/dockerfile/create/<name>', methods=['GET', 'POST'])
+@login_required
+def dockerfile_create(name):
+    error = None
+    if request.method == 'POST':
+        try:
+            if request.form['tag'] != '':
+                tag = request.form['tag']
+            else:
+                error = '请填写标签'
+                return render_template('dockerfie_create.html', error=error, name=name)
+            with open(str(os.getcwd()) + '/dockerfile/' + name, 'r') as f:
+                client.images.build(path=str(os.getcwd()) + '/dockerfile/', fileobj=f, tag=tag)
+        except:
+            return render_template('dockerfie_create.html', error='请检查dockerfile', name=name)
+        return redirect(url_for('containers'))
+    else:
+        return render_template('dockerfie_create.html', error=error, name=name)
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>用户 - Docker自动部署工具</title>
+    <title>dockerfile - Docker自动部署工具</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"
@@ -95,7 +95,7 @@
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">密码管理</h1>
+                <h1 class="page-header">构建镜像与容器</h1>
             </div>
         </div>
         <div class="row">
@@ -103,32 +103,22 @@
             <div class="col-lg-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        修改密码
+                        构建基于{{ name }}的镜像与容器
                     </div>
                     <div class="panel-body">
-                        <form role="form" action="{{ url_for('user') }}" method="post">
+                        <form role="form" action="/dockerfile/create/{{ name }}" method="post">
                             <fieldset>
                                 <div class="form-group">
-                                    <label>密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="密码"
-                                           type="password" name="password" value="">
-                                </div>
-                                <div class="form-group">
-                                    <label>新密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="新密码"
-                                           type="password" name="new_password" value="">
+                                    <label>镜像标签</label>
+                                    <input class="form-control" id="tag" placeholder="例如: alpine/git:latest"
+                                           type="text" name="tag" value="">
                                 </div>
                                 {% if error %}
                                     <div class="form-group">
                                         <span class="label label-danger">Error:{{ error }}</span>
                                     </div>
                                 {% endif %}
-                                <div class="form-group">
-                                    <label>确认密码</label>
-                                    <input class="form-control" id="disabledInput" placeholder="确认密码"
-                                           type="password" name="new_password_again" value="">
-                                </div>
-                                <button type="submit" class="btn btn-primary">修改</button>
+                                <button type="submit" class="btn btn-primary">构建镜像与容器</button>
                             </fieldset>
                         </form>
                     </div>
