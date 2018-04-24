@@ -79,7 +79,7 @@
                         <a href=""><i class="fa fa-user fa-fw"></i> 用户<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="/user">密码管理</a>
+                                <a href="/user">修改密码</a>
                             </li>
                             <li>
                                 <a href="/logout">登出</a>
@@ -106,7 +106,7 @@
             <div class="col-lg-2">
                 <form action="{{ url_for('dockerhub') }}" method="post">
                     <div class="input-group custom-search-form">
-                        <input type="text" class="form-control" placeholder="Search..." name="term">
+                        <input type="text" class="form-control" placeholder="搜索镜像" name="term">
                         <span class="input-group-btn">
                                     <button class="btn btn-default" type="submit">
                                         <i class="fa fa-search"></i>
